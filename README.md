@@ -4,7 +4,9 @@ This is the project for mocking a SonicWALL Guest Auth endpoints.
 
 ## Getting Started
 
+<aside class="warning">
 Important note: Since we do not deliver a nuget package for core components (CaptivePortal.Models, CaptivePortal.Data and CaptivePortal.Infrastructure) the MockServer sources have to reside side-by-side to the CaptivePortal sources. 
+</aside>
 
 ```
 ProjectsFolder
