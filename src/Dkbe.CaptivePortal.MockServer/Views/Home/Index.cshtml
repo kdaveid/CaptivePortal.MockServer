@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="row">
+    <div class="col-md-3">
+        <h3>Session login produces...</h3>
+        <form action="api/settings/login" method="post">
+            <select name="code" class="form-control">
+                <option value="@ResponseHelper.Login.LOGIN_SUCCEEDED">Login success</option>
+                <option value="@ResponseHelper.Login.SESSION_LIMIT_EXCEEDED">Session limit exceeded</option>
+                <option value="@ResponseHelper.Login.LOGIN_FAILED">Login fails</option>
+                <option value="@ResponseHelper.Login.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                <option value="@ResponseHelper.Login.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                <option value="@ResponseHelper.Login.INVALID_SESSION_ID">Invalid Session Id</option>
+                <option value="@ResponseHelper.Login.INTERNAL_ERROR">Internal error</option>
+            </select>
+            <input type="button" name="Update" value="Update" class="btn btn-danger" id="form_login_submit" />
+            <p class="alert alert-warning update-warning hidden"></p>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <h3>Session logoff produces...</h3>
+        <form action="api/settings/logoff" method="post">
+            <select name="code" class="form-control">
+                <option value="@ResponseHelper.Logoff.LOGOFF_SUCCEEDED">Logoff success</option>
+                <option value="@ResponseHelper.Logoff.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                <option value="@ResponseHelper.Logoff.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                <option value="@ResponseHelper.Logoff.INVALID_SESSION_ID">Invalid Session Id</option>
+                <option value="@ResponseHelper.Logoff.INTERNAL_ERROR">Internal error</option>
+            </select>
+            <input type="button" name="Update" value="Update" class="btn btn-danger" id="form_logoff_submit" />
+            <p class="alert alert-warning update-warning hidden"></p>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <h3>Update session produces...</h3>
+        <form action="api/settings/updatesession" method="post">
+            <select name="code" class="form-control">
+                <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_SUCCEEDED">Session Update succeeds</option>
+                <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_FAILED">Session Update fails</option>
+                <option value="@ResponseHelper.UpdateSession.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                <option value="@ResponseHelper.UpdateSession.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                <option value="@ResponseHelper.UpdateSession.INTERNAL_ERROR">Internal error</option>
+            </select>
+            <input type="button" name="Update" value="Update" class="btn btn-danger" id="form_updatesession_submit" />
+            <p class="alert alert-warning update-warning hidden"></p>
+        </form>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-3">
+        <input type="button" value="Invoke Session Sync" class="btn btn-default disabled" id="invoke_session_sync" />
+    </div>
+</div>
+
+<div class="row">
+    <h2>Simple redirections</h2>
+    <p>These links just open the according pages on Captive Portal web app.</p>
+    @{ foreach (string zone in ViewBag.Zones)
+        {
+            <div class="col-md-2 col-s-12">Zone: @zone</div>
+            <div class="col-md-2 col-s-12"><a href="login/@zone" class="btn btn-default" target="_blank">Login</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-session-expiration/@zone" class="btn btn-default" target="_blank">Session Expiration</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-idle-timeout/@zone" class="btn btn-default" target="_blank">Idle Timeout</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-max-session/@zone" class="btn btn-default" target="_blank">Max Sessions reached</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-traffic-excceeded/@zone" class="btn btn-default" target="_blank">Traffic exceeded</a></div>
+        }
+    }
+</div>
+
+
+@section scripts{
+    <script>
+        $('#form_login_submit').click(function (e) {
+            e.preventDefault();
+            updateViaApi($(this));
+        });
+        $('#form_logoff_submit').click(function (e) {
+            e.preventDefault();
+            updateViaApi($(this));
+        });
+        $('#form_updatesession_submit').click(function (e) {
+            e.preventDefault();
+            updateViaApi($(this));
+        });
+
+        function updateViaApi(referrer) {
+
+            var $button = referrer,
+                $form = $(referrer).closest('form');
+            var action = $($form).attr('action'),
+                data = $($form).serialize(),
+                dataType = 'application/x-www-form-urlencoded; charset=utf-8',
+                messagebox = $($form).find('.update-warning');
+
+            $(messagebox).removeClass('hidden');
+
+            $.ajax({
+                type: 'POST',
+                url: action,
+                dataType: 'json',
+                contentType: dataType,
+                data: data,
+                success: function (result) {
+                    $(messagebox).text(result.message);
+                }
+            }).fail(function (err) {
+                $(messagebox).text('failed! see console');
+                console.log(err);
+            });
+        };
+
+        $('option').each(function (i, elem) {
+            //console.log(elem);
+            var text = '(' + $(elem).val() + ') ' + $(elem).text();
+            $(elem).text(text);
+        });
+    </script>
+}

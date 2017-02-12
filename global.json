@@ -1,0 +1,6 @@
+﻿{
+  "projects": [ "src", "test", "../CaptivePortal/src/" ],
+  "sdk": {
+    "version": "1.0.0-preview2-003131"
+  }
+}
