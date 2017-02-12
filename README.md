@@ -24,7 +24,7 @@ dotnet restore
 cd src/Dkbe.CaptivePortal.MockServer
 bower install
 dotnet bundle
-dotnet run (<-- which invokes "dotnet bundle" as well)
+dotnet run --environment "Development"
 ```
 
 Then, goto [http://localhost:5001](http://localhost:5001)
