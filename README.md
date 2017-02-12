@@ -37,12 +37,7 @@ It looks like this:
 
 ![alt](misc/mockserver_ui.png)
 
-You need to restore its packages. Within root directory issue the following commands:
-```
-dotnet restore src/Dkbe.CaptivePortal.MockServer
-dotnet run
-```
-The server will be available at port 5001. Please make sure that you update `application.development.json` file within CaptivePortal web app accordingly: 
+Please make sure that you update `application.development.json` file within CaptivePortal web app accordingly: 
 ```
 {
     "AppSettings" : {
