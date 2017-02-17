@@ -64,7 +64,7 @@
     @{ foreach (string zone in ViewBag.Zones)
         {
             <div class="col-md-2 col-s-12">Zone: @zone</div>
-            <div class="col-md-2 col-s-12"><a href="login/@zone" class="btn btn-default" target="_blank">Login</a></div>
+            <div class="col-md-2 col-s-12"><a href="@zone/signin" class="btn btn-default" target="_blank">Login</a></div>
             <div class="col-md-2 col-s-12"><a href="redirect-to-session-expiration/@zone" class="btn btn-default" target="_blank">Session Expiration</a></div>
             <div class="col-md-2 col-s-12"><a href="redirect-to-idle-timeout/@zone" class="btn btn-default" target="_blank">Idle Timeout</a></div>
             <div class="col-md-2 col-s-12"><a href="redirect-to-max-session/@zone" class="btn btn-default" target="_blank">Max Sessions reached</a></div>

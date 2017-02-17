@@ -32,7 +32,7 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             return View();
         }
 
-        [HttpGet("login/{zone}")]
+        [HttpGet("{zone}/signin")]
         public IActionResult Login(string zone)
         {
             var sessionId = Guid.NewGuid();
