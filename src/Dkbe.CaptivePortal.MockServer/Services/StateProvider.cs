@@ -65,7 +65,7 @@ namespace Dkbe.CaptivePortal.MockServer
             }
 
             session.UserName = loginModel.userName;
-            session.SessionRemaining = loginModel.sessionLifeTime;
+            session.SessionRemaining = loginModel.sessionLifetime;
         }
 
         public void UpdateSessionWithUpdate(SNWLUpdateSessionRequest updateModel)
