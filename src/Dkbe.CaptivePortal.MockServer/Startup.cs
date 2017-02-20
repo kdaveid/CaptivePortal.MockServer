@@ -28,7 +28,9 @@ namespace Dkbe.CaptivePortal.MockServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddStateProvider(s => s.ZoneNames = new string[] { "lerngarage" });
+            services.AddOptions();
+            services.AddStateProvider();
+            services.Configure<StaticZoneSettings>(Configuration.GetSection("AppSettings:StaticZoneSettings"));
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddMvc().AddXmlSerializerFormatters();

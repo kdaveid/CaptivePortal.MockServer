@@ -20,28 +20,28 @@ namespace Dkbe.CaptivePortal.MockServer.Models
             return new Uri(appSettings.CaptivePortalUrl, UriKind.Absolute);
         }
 
-        public static Uri GetLoginPage(this AppSettings appSettings, string zone)
+        public static Uri GetLoginPage(this AppSettings appSettings, string zonePath)
         {
-            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.LoginPage.Replace("{zone}", zone));
+            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.LoginPage.Replace("{zone}", zonePath));
         }
-        public static Uri GetSessionExpirationPage(this AppSettings appSettings, string zone)
+        public static Uri GetSessionExpirationPage(this AppSettings appSettings, string zonePath)
         {
-            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.SessionExpirationPage.Replace("{zone}", zone));
-        }
-
-        public static Uri GetSessionIdleTimeOutPage(this AppSettings appSettings, string zone)
-        {
-            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.IdleTimeOutPage.Replace("{zone}", zone));
+            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.SessionExpirationPage.Replace("{zone}", zonePath));
         }
 
-        public static Uri GetSessionMaxSessionsPage(this AppSettings appSettings, string zone)
+        public static Uri GetSessionIdleTimeOutPage(this AppSettings appSettings, string zonePath)
         {
-            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.MaxSessionsPage.Replace("{zone}", zone));
+            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.IdleTimeOutPage.Replace("{zone}", zonePath));
         }
 
-        public static Uri GetSessionTrafficExceeededPage(this AppSettings appSettings, string zone)
+        public static Uri GetSessionMaxSessionsPage(this AppSettings appSettings, string zonePath)
         {
-            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.TrafficExceededPage.Replace("{zone}", zone));
+            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.MaxSessionsPage.Replace("{zone}", zonePath));
+        }
+
+        public static Uri GetSessionTrafficExceeededPage(this AppSettings appSettings, string zonePath)
+        {
+            return new Uri(getBaseUri(appSettings), appSettings.GuestAuthSettings.TrafficExceededPage.Replace("{zone}", zonePath));
         }
 
 

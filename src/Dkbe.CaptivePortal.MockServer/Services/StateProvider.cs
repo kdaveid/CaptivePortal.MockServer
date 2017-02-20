@@ -1,17 +1,16 @@
 ﻿using Dkbe.CaptivePortal.Models.SonicOS;
-using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Dkbe.CaptivePortal.MockServer.Services;
 using Microsoft.Extensions.Options;
+using Dkbe.CaptivePortal.MockServer.Models;
 
 namespace Dkbe.CaptivePortal.MockServer
 {
     public interface IStateProvider
     {
-        string[] Zones { get; }
+        IEnumerable<StaticZone> StaticZones { get; }
 
         int LoginReplyCode { get; set; }
 
@@ -34,13 +33,14 @@ namespace Dkbe.CaptivePortal.MockServer
     {
         List<SNWLSession> _generatedSessions;
         private readonly ILogger<StateProvider> _logger;
-        public string[] Zones { get; }
 
-        public StateProvider(ILogger<StateProvider> logger, IOptions<StateProviderOptions> options)
+        public IEnumerable<StaticZone> StaticZones { get; }
+
+        public StateProvider(ILogger<StateProvider> logger, IOptions<StaticZoneSettings> options)
         {
             _generatedSessions = new List<SNWLSession>();
             _logger = logger;
-            Zones = options.Value.ZoneNames;
+            StaticZones = options.Value.Zones;
         }
 
         public int LoginReplyCode { get; set; } = ResponseHelper.Login.LOGIN_SUCCEEDED;

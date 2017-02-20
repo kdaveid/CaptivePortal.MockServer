@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<StaticZone>
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -61,14 +62,14 @@
 <div class="row">
     <h2>Simple redirections</h2>
     <p>These links just open the according pages on Captive Portal web app.</p>
-    @{ foreach (string zone in ViewBag.Zones)
+    @{ foreach (StaticZone zone in Model)
         {
-            <div class="col-md-2 col-s-12">Zone: @zone</div>
-            <div class="col-md-2 col-s-12"><a href="@zone/signin" class="btn btn-default" target="_blank">Login</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-session-expiration/@zone" class="btn btn-default" target="_blank">Session Expiration</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-idle-timeout/@zone" class="btn btn-default" target="_blank">Idle Timeout</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-max-session/@zone" class="btn btn-default" target="_blank">Max Sessions reached</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-traffic-excceeded/@zone" class="btn btn-default" target="_blank">Traffic exceeded</a></div>
+            <div class="col-md-2 col-s-12">Zone: @zone.Name</div>
+            <div class="col-md-2 col-s-12"><a href="signin/@zone.LocalPath" class="btn btn-default" target="_blank">Login</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-session-expiration/@zone.LocalPath" class="btn btn-default" target="_blank">Session Expiration</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-idle-timeout/@zone.LocalPath" class="btn btn-default" target="_blank">Idle Timeout</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-max-session/@zone.LocalPath" class="btn btn-default" target="_blank">Max Sessions reached</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-traffic-excceeded/@zone.LocalPath" class="btn btn-default" target="_blank">Traffic exceeded</a></div>
         }
     }
 </div>

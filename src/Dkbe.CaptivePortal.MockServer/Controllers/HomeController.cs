@@ -18,23 +18,26 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
         private readonly IStateProvider _stateProvider;
         private readonly AppSettings _appSettings;
         private readonly ILogger<HomeController> _logger;
+        private readonly List<StaticZone> _zones;
 
-        public HomeController(IStateProvider stateProvider, IOptions<AppSettings> appSettings, ILogger<HomeController> logger)
+        public HomeController(IStateProvider stateProvider, IOptions<AppSettings> appSettings, ILogger<HomeController> logger, IOptions<StaticZoneSettings> zoneSettings)
         {
             _stateProvider = stateProvider;
             _appSettings = appSettings.Value;
             _logger = logger;
+            _zones = zoneSettings.Value.Zones;
         }
 
         public IActionResult Index()
         {
-            ViewBag.Zones = _stateProvider.Zones;
-            return View();
+            return View(_stateProvider.StaticZones);
         }
 
-        [HttpGet("{zone}/signin")]
+        [HttpGet("signin/{zone}")]
         public IActionResult Login(string zone)
         {
+            StaticZone zoneModel = _zones.Single(s => s.LocalPath.Equals(zone, StringComparison.CurrentCultureIgnoreCase));
+
             var sessionId = Guid.NewGuid();
             var model = new SNWLExternalAuthenticationRedirectModel
             {
@@ -61,8 +64,10 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
                         $"ClientRedirectUrl={Uri.EscapeUriString(model.ClientRedirectUrl)}&" +
                         $"MgmtBaseUrl={Uri.EscapeUriString(model.MgmtBaseUrl)}";
 
-            var fullUrl = $"{_appSettings.GetLoginPage(zone)}{queryString}";
+            var fullUrl = $"{_appSettings.GetLoginPage(zoneModel.LocalPath)}{queryString}";
+
             _logger.LogInformation($"Redirect user to: {fullUrl}");
+
             return Redirect(fullUrl);
         }
 
