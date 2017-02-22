@@ -1,16 +1,12 @@
 ﻿using Dkbe.CaptivePortal.Models.SonicOS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Dkbe.CaptivePortal.MockServer.Models
 {
     public static class ModelExtensions
     {
-        public static SNWLSession Map(this SNWLExternalAuthenticationRedirectModel requestModel)
+        public static FakeSNWLSession Map(this SNWLExternalAuthenticationRedirectModel requestModel)
         {
-            return new SNWLSession
+            return new FakeSNWLSession
             {
                 ID = requestModel.SessionId,
                 IP = requestModel.IP,

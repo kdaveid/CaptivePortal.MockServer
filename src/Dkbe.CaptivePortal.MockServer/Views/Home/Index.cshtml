@@ -1,12 +1,83 @@
-﻿@model IEnumerable<StaticZone>
+﻿@model IndexViewModel
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Mock Server - Index";
 }
 
+<div class="row">
+    <h3>Simple redirections</h3>
+    <p>These links just open the according pages on Captive Portal web app.</p>
+    @{ foreach (StaticZone zone in Model.StaticZones)
+        {
+            <div class="col-md-2 col-s-12">Zone: @zone.Name</div>
+            <div class="col-md-2 col-s-12"><a href="signin/@zone.LocalPath" class="btn btn-default" target="_blank">Login</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-session-expiration/@zone.LocalPath" class="btn btn-default" target="_blank">Session Expiration</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-idle-timeout/@zone.LocalPath" class="btn btn-default" target="_blank">Idle Timeout</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-max-session/@zone.LocalPath" class="btn btn-default" target="_blank">Max Sessions reached</a></div>
+            <div class="col-md-2 col-s-12"><a href="redirect-to-traffic-excceeded/@zone.LocalPath" class="btn btn-default" target="_blank">Traffic exceeded</a></div>
+        }
+    }
+</div>
+<hr />
+<div class="row">
+    <h3>Current Sessions</h3>
+
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>UserName</td>
+                <td>IP</td>
+                <td>MAC</td>
+                <td>Idle</td>
+                <td>RxBytes</td>
+                <td>TxBytes</td>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (Model.HasSessions)
+                {
+                    foreach (SNWLSession session in Model.Sessions)
+                    {
+                        <tr>
+                            <td>@session.ID</td>
+                            <td>@session.UserName</td>
+                            <td>@session.IP</td>
+                            <td>@session.MAC</td>
+                            <td>@session.Idle</td>
+                            <td>@session.RxBytes</td>
+                            <td>@session.TxBytes</td>
+                            <td>
+
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td>No data</td>
+                    </tr>
+
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<hr />
 
 <div class="row">
     <div class="col-md-3">
-        <h3>Session login produces...</h3>
+        <input type="button" value="Invoke Session Sync" class="btn btn-default disabled" id="invoke_session_sync" />
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-3">
+        <h5>Session login produces...</h5>
         <form action="api/settings/login" method="post">
             <select name="code" class="form-control">
                 <option value="@ResponseHelper.Login.LOGIN_SUCCEEDED">Login success</option>
@@ -22,7 +93,7 @@
         </form>
     </div>
     <div class="col-md-3">
-        <h3>Session logoff produces...</h3>
+        <h5>Session logoff produces...</h5>
         <form action="api/settings/logoff" method="post">
             <select name="code" class="form-control">
                 <option value="@ResponseHelper.Logoff.LOGOFF_SUCCEEDED">Logoff success</option>
@@ -36,7 +107,7 @@
         </form>
     </div>
     <div class="col-md-3">
-        <h3>Update session produces...</h3>
+        <h5>Update session produces...</h5>
         <form action="api/settings/updatesession" method="post">
             <select name="code" class="form-control">
                 <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_SUCCEEDED">Session Update succeeds</option>
@@ -53,26 +124,8 @@
 
 <hr />
 
-<div class="row">
-    <div class="col-md-3">
-        <input type="button" value="Invoke Session Sync" class="btn btn-default disabled" id="invoke_session_sync" />
-    </div>
-</div>
 
-<div class="row">
-    <h2>Simple redirections</h2>
-    <p>These links just open the according pages on Captive Portal web app.</p>
-    @{ foreach (StaticZone zone in Model)
-        {
-            <div class="col-md-2 col-s-12">Zone: @zone.Name</div>
-            <div class="col-md-2 col-s-12"><a href="signin/@zone.LocalPath" class="btn btn-default" target="_blank">Login</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-session-expiration/@zone.LocalPath" class="btn btn-default" target="_blank">Session Expiration</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-idle-timeout/@zone.LocalPath" class="btn btn-default" target="_blank">Idle Timeout</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-max-session/@zone.LocalPath" class="btn btn-default" target="_blank">Max Sessions reached</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-traffic-excceeded/@zone.LocalPath" class="btn btn-default" target="_blank">Traffic exceeded</a></div>
-        }
-    }
-</div>
+
 
 
 @section scripts{

@@ -1,52 +1,54 @@
-﻿using System;
+﻿using Dkbe.CaptivePortal.MockServer.Models;
+using Dkbe.CaptivePortal.MockServer.Services;
+using Dkbe.CaptivePortal.Models.SonicOS;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Dkbe.CaptivePortal.Models.SonicOS;
-using Dkbe.CaptivePortal.MockServer.Services;
 using System.Net.Http;
-using Microsoft.Extensions.Options;
-using Dkbe.CaptivePortal.MockServer.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Dkbe.CaptivePortal.MockServer.Controllers
 {
     public class HomeController : Controller
     {
         private readonly IStateProvider _stateProvider;
-        private readonly AppSettings _appSettings;
         private readonly ILogger<HomeController> _logger;
+        private readonly CaptivePortalSettings _settings;
         private readonly List<StaticZone> _zones;
 
-        public HomeController(IStateProvider stateProvider, IOptions<AppSettings> appSettings, ILogger<HomeController> logger, IOptions<StaticZoneSettings> zoneSettings)
+        public HomeController(IStateProvider stateProvider, IOptions<CaptivePortalSettings> captivePortalSettings, ILogger<HomeController> logger, IOptions<StaticZoneSettings> zoneSettings)
         {
             _stateProvider = stateProvider;
-            _appSettings = appSettings.Value;
+            _settings = captivePortalSettings.Value;
             _logger = logger;
             _zones = zoneSettings.Value.Zones;
         }
 
         public IActionResult Index()
         {
-            return View(_stateProvider.StaticZones);
+            var viewModel = new IndexViewModel();
+            viewModel.StaticZones = _stateProvider.StaticZones;
+            viewModel.Sessions = _stateProvider.GetGeneratedSessions.OrderByDescending(s => s.SessionRemaining);
+            return View(viewModel);
         }
 
         [HttpGet("signin/{zone}")]
-        public IActionResult Login(string zone)
+        public IActionResult CreateSession(string zone)
         {
-            StaticZone zoneModel = _zones.Single(s => s.LocalPath.Equals(zone, StringComparison.CurrentCultureIgnoreCase));
+            var zoneModel = _zones.Single(s => s.LocalPath.Equals(zone, StringComparison.CurrentCultureIgnoreCase));
 
-            var sessionId = Guid.NewGuid();
+            if (zoneModel == null) return RedirectToAction(nameof(Error), new { message = $"Could not find {nameof(CaptivePortal.Models.Zone)} for \"zone\"" });
+
             var model = new SNWLExternalAuthenticationRedirectModel
             {
-                SessionId = sessionId.ToString(),
+                SessionId = Guid.NewGuid().ToString(),
                 MAC = FakeDataGenerator.GenerateMACAddress(),
                 IP = FakeDataGenerator.GenerateRandomIp(),
                 Ufi = "0006010203",
                 SSID = "",
-                req = "http://www.google.ch",
+                req = "http://www.gibhub.com",
                 ClientRedirectUrl = "http://localhost:5001",
                 MgmtBaseUrl = "http://localhost:1234"
             };
@@ -54,26 +56,29 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             // keep track of generated models for session sync
             _stateProvider.AddGeneratedSession(model.Map());
 
-            string queryString = $"/?" +
-                        $"SessionId={model.SessionId}&" +
-                        $"MAC={model.MAC}&" +
-                        $"IP={model.IP}&" +
-                        $"Ufi={model.Ufi}&" +
-                        $"SSID={model.SSID}&" +
-                        $"req={Uri.EscapeUriString(model.req)}&" +
-                        $"ClientRedirectUrl={Uri.EscapeUriString(model.ClientRedirectUrl)}&" +
-                        $"MgmtBaseUrl={Uri.EscapeUriString(model.MgmtBaseUrl)}";
-
-            var fullUrl = $"{_appSettings.GetLoginPage(zoneModel.LocalPath)}{queryString}";
+            var fullUrl = string.Concat(_settings.GetLoginPage(zoneModel.LocalPath), buildQueryString(model));
 
             _logger.LogInformation($"Redirect user to: {fullUrl}");
 
             return Redirect(fullUrl);
         }
 
+        private string buildQueryString(SNWLExternalAuthenticationRedirectModel model)
+        {
+            return $"/?" +
+                    $"SessionId={model.SessionId}&" +
+                    $"MAC={model.MAC}&" +
+                    $"IP={model.IP}&" +
+                    $"Ufi={model.Ufi}&" +
+                    $"SSID={model.SSID}&" +
+                    $"req={Uri.EscapeUriString(model.req)}&" +
+                    $"ClientRedirectUrl={Uri.EscapeUriString(model.ClientRedirectUrl)}&" +
+                    $"MgmtBaseUrl={Uri.EscapeUriString(model.MgmtBaseUrl)}";
+        }
+
         [HttpPost("externalGuestLogin.cgi")]
         [Produces("application/xml")]
-        public IActionResult ExternalGuestLogin([FromForm] SNWLExternalAuthenticationRequest model)
+        public IActionResult ExternalGuestLogin(SNWLExternalAuthenticationRequest model)
         {
             SNWLExternalAuthenticationXMLResponse responseModel;
 
@@ -81,8 +86,6 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             {
                 return new ObjectResult(ResponseHelper.Login.InvalidOrMissingCGIParamResponse());
             }
-
-            _stateProvider.UpdateSessionWithLogin(model);
 
             switch (_stateProvider.LoginReplyCode)
             {
@@ -103,12 +106,16 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
                     responseModel = ResponseHelper.Login.InternalErrorResponse();
                     break;
             }
+
+            // Local bookkeeping
+            _stateProvider.ProcessLoginRequest(model);
+
             return new ObjectResult(responseModel);
         }
 
         [HttpPost("externalGuestUpdateSession.cgi")]
         [Produces("application/xml")]
-        public IActionResult UpdateSession([FromForm] SNWLUpdateSessionRequest model)
+        public IActionResult UpdateSession(SNWLUpdateSessionRequest model)
         {
             SNWLUpdateSessionReplyXMLResponse responseModel;
 
@@ -116,8 +123,6 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             {
                 return new ObjectResult(ResponseHelper.UpdateSession.InvalidOrMissingCGIParamResponse());
             }
-
-            _stateProvider.UpdateSessionWithUpdate(model);
 
             switch (_stateProvider.UpdateSessionReplyCode)
             {
@@ -138,6 +143,10 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
                     responseModel = ResponseHelper.UpdateSession.InternalErrorResponse();
                     break;
             }
+
+            // local bookkeeping
+            _stateProvider.ProcessUpdateRequest(model);
+
             return new ObjectResult(responseModel);
         }
 
@@ -151,8 +160,6 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             {
                 return new ObjectResult(ResponseHelper.Logoff.InvalidOrMissingCGIParamResponse());
             }
-
-            _stateProvider.RemoveGeneratedSession(model);
 
             switch (_stateProvider.LogoffReplyCode)
             {
@@ -173,55 +180,97 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
                     responseModel = ResponseHelper.Logoff.InternalErrorResponse();
                     break;
             }
+
+            // local bookkeeping
+            _stateProvider.ProcessLogoutRequest(model);
+
             return new ObjectResult(responseModel);
         }
 
-        [HttpGet("invoke-sessionsync")]
-        public IActionResult InvokeSessionSync(SNWLLogoffRequest model)
+        [HttpGet("invoke-sessionsync/{zone}")]
+        public IActionResult InvokeSessionSync(string zone)
         {
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(_appSettings.CaptivePortalUrl, UriKind.Absolute);
+            throw new NotImplementedException();
 
-            var response = client.GetAsync("api/manage/sync").Result;
+            //var client = new HttpClient();
+            //var httpContent = new FormUrlEncodedContent();
+
+            //var response = client.PostAsync(_settings.GetSessionSyncEndpoint(zone), content).Result;
+            //response.EnsureSuccessStatusCode();
+
+            //return Ok();
+        }
+
+        [HttpGet("invoke-autologout")]
+        public IActionResult InvokeAutoLogout()
+        {
+            throw new NotImplementedException();
+
+            //var client = new HttpClient();
+            //var httpContent = new FormUrlEncodedContent();
+
+            //var response = client.PostAsync(_settings.GetAutoLogoutEndpoint(), content).Result;
+            //response.EnsureSuccessStatusCode();
+
+            //return Ok();
+        }
+
+        [HttpGet("invoke-serverstatuscheck")]
+        public IActionResult InvokeServerStatusCheck()
+        {
+            var client = new HttpClient();
+
+            var response = client.GetAsync(_settings.GetServerStatusCheckEndpoint()).Result;
             response.EnsureSuccessStatusCode();
+
+            // TODO: parse result
+
+            // TODO: check return code
+
+            // TODO: return JSON
 
             return Ok();
         }
 
         [HttpPost("set-session-remaining")]
-        public IActionResult UpdateSession(string sessionid, int remaining)
+        public IActionResult SetSessionRemaining(string sessionid, int remaining)
         {
             var session = _stateProvider.GetGeneratedSessions.Where(s => s.ID == sessionid).SingleOrDefault();
             session.SessionRemaining = remaining;
             return Ok();
         }
 
+        #region Simple Redirects
+
         [HttpGet("redirect-to-session-expiration/{zone}")]
         public IActionResult RedirectToSessionExpiration(string zone)
         {
-            return Redirect(_appSettings.GetSessionExpirationPage(zone).ToString());
+            return Redirect(_settings.GetSessionExpirationPage(zone).ToString());
         }
 
         [HttpGet("redirect-to-max-session/{zone}")]
         public IActionResult RedirectToMaxSessions(string zone)
         {
-            return Redirect(_appSettings.GetSessionMaxSessionsPage(zone).ToString());
+            return Redirect(_settings.GetSessionMaxSessionsPage(zone).ToString());
         }
 
         [HttpGet("redirect-to-idle-timeout/{zone}")]
         public IActionResult RedirectToIdleTimeout(string zone)
         {
-            return Redirect(_appSettings.GetSessionIdleTimeOutPage(zone).ToString());
+            return Redirect(_settings.GetSessionIdleTimeOutPage(zone).ToString());
         }
 
         [HttpGet("redirect-to-traffic-excceeded/{zone}")]
         public IActionResult RedirectToTrafficExceeded(string zone)
         {
-            return Redirect(_appSettings.GetSessionTrafficExceeededPage(zone).ToString());
+            return Redirect(_settings.GetSessionTrafficExceeededPage(zone).ToString());
         }
 
-        public IActionResult Error()
+        #endregion Simple Redirects
+
+        public IActionResult Error(string message)
         {
+            ViewBag.Message = message;
             return View();
         }
     }

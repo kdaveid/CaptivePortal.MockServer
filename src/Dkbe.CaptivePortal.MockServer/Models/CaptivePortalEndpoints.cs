@@ -9,7 +9,7 @@ namespace Dkbe.CaptivePortal.MockServer.Models
     /// External Authentication Pages: These are the SNWL Guest Auth page settings on the zones.
     /// Together with the Capitive Portal URL these pages will build the uri to be invoked by the Mock Server
     /// </summary>
-    public class GuestAuthSettings
+    public class CaptivePortalEndpoints
     {
         /// <summary>
         /// Login Page. Sonicwall redirects the client with SessionId etc. to this page. 
@@ -38,6 +38,21 @@ namespace Dkbe.CaptivePortal.MockServer.Models
         /// As <see cref="SessionExpirationPage"/>
         /// </summary>
         public string TrafficExceededPage { get; set; }
+
+        /// <summary>
+        /// Url of auto logout endpoint
+        /// </summary>
+        public string AutoLogout { get; set; }
+
+        /// <summary>
+        /// Url of session sync url
+        /// </summary>
+        public string SessionSync { get; set; }
+
+        /// <summary>
+        /// Url of server status check url
+        /// </summary>
+        public string ServerStatusCheck { get; set; }
 
     }
 }

@@ -1,47 +1,19 @@
-﻿using Dkbe.CaptivePortal.Models.SonicOS;
+﻿using Dkbe.CaptivePortal.MockServer.Models;
+using Dkbe.CaptivePortal.Models.SonicOS;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
-using Dkbe.CaptivePortal.MockServer.Services;
-using Microsoft.Extensions.Options;
-using Dkbe.CaptivePortal.MockServer.Models;
 
 namespace Dkbe.CaptivePortal.MockServer
 {
-    public interface IStateProvider
-    {
-        IEnumerable<StaticZone> StaticZones { get; }
-
-        int LoginReplyCode { get; set; }
-
-        int UpdateSessionReplyCode { get; set; }
-
-        int LogoffReplyCode { get; set; }
-
-        IEnumerable<SNWLSession> GetGeneratedSessions { get; }
-
-        void AddGeneratedSession(SNWLSession session);
-
-        void UpdateSessionWithLogin(SNWLExternalAuthenticationRequest login);
-
-        void UpdateSessionWithUpdate(SNWLUpdateSessionRequest login);
-
-        void RemoveGeneratedSession(SNWLLogoffRequest logoff);
-    }
-
     public class StateProvider : IStateProvider
     {
-        List<SNWLSession> _generatedSessions;
-        private readonly ILogger<StateProvider> _logger;
+        #region Properties
+
+        public IEnumerable<FakeSNWLSession> GetGeneratedSessions { get { return _generatedSessions; } }
 
         public IEnumerable<StaticZone> StaticZones { get; }
-
-        public StateProvider(ILogger<StateProvider> logger, IOptions<StaticZoneSettings> options)
-        {
-            _generatedSessions = new List<SNWLSession>();
-            _logger = logger;
-            StaticZones = options.Value.Zones;
-        }
 
         public int LoginReplyCode { get; set; } = ResponseHelper.Login.LOGIN_SUCCEEDED;
 
@@ -49,13 +21,28 @@ namespace Dkbe.CaptivePortal.MockServer
 
         public int LogoffReplyCode { get; set; } = ResponseHelper.Logoff.LOGOFF_SUCCEEDED;
 
-        public void AddGeneratedSession(SNWLSession session)
+        #endregion
+
+        #region CTOR and private fields
+
+        private List<FakeSNWLSession> _generatedSessions = new List<FakeSNWLSession>();
+        private readonly ILogger<StateProvider> _logger;
+
+        public StateProvider(ILogger<StateProvider> logger, IOptions<StaticZoneSettings> options)
+        {
+            _logger = logger;
+            StaticZones = options.Value.Zones;
+        }
+
+        #endregion
+
+        public void AddGeneratedSession(FakeSNWLSession session)
         {
             if (!_generatedSessions.Contains(session))
                 _generatedSessions.Add(session);
         }
 
-        public void UpdateSessionWithLogin(SNWLExternalAuthenticationRequest loginModel)
+        public void ProcessLoginRequest(SNWLExternalAuthenticationRequest loginModel)
         {
             var session = _generatedSessions.Where(s => s.ID == loginModel.sessId).SingleOrDefault();
             if (session == null)
@@ -64,29 +51,40 @@ namespace Dkbe.CaptivePortal.MockServer
                 return;
             }
 
+            session.Status = (SessionStatus)LoginReplyCode;
             session.UserName = loginModel.userName;
             session.SessionRemaining = loginModel.sessionLifetime;
         }
 
-        public void UpdateSessionWithUpdate(SNWLUpdateSessionRequest updateModel)
+      
+        public void ProcessUpdateRequest(SNWLUpdateSessionRequest updateModel)
         {
             var session = _generatedSessions.Where(s => s.ID == updateModel.sessID).SingleOrDefault();
             if (session == null)
                 _logger.LogCritical($"Session with SessionID \"{updateModel.sessID}\" not found in local collection. Could not update.");
 
+            session.Status = (SessionStatus)UpdateSessionReplyCode;
             session.UserName = updateModel.userName;
             session.SessionRemaining = updateModel.sessionLifetime;
         }
 
-        public void RemoveGeneratedSession(SNWLLogoffRequest logoff)
+        public void ProcessLogoutRequest(SNWLLogoffRequest logoff)
         {
             var session = _generatedSessions.Where(s => s.ID == logoff.sessId).SingleOrDefault();
             if (session == null)
-                _logger.LogCritical($"Session with SessionID \"{logoff.sessId}\" not found in local collection. Could not remove it.");
+                _logger.LogCritical($"Session with SessionID \"{logoff.sessId}\" not found in local collection. Could not mark it signedout.");
 
+            session.Status = (SessionStatus)LogoffReplyCode;
             _generatedSessions.Remove(session);
         }
 
-        public IEnumerable<SNWLSession> GetGeneratedSessions { get { return _generatedSessions; } }
+        public void Delete(string sessionId)
+        {
+            var session = _generatedSessions.Where(s => s.ID == sessionId).SingleOrDefault();
+            if (session == null)
+                _logger.LogCritical($"Session with SessionID \"{sessionId}\" not found in local collection. Could not delete it.");
+
+            _generatedSessions.Remove(session);
+        }
     }
 }
