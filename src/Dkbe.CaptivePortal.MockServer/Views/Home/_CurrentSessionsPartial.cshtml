@@ -1,0 +1,63 @@
+﻿@model IndexViewModel
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3>Current Sessions</h3>
+
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <td>Status</td>
+                    <td>ID</td>
+                    <td>UserName</td>
+                    <td>IP</td>
+                    <td>MAC</td>
+                    <td>Idle</td>
+                    <td>RxBytes</td>
+                    <td>TxBytes</td>
+                    <td>Actions (NOT IMPLEMENTED)</td>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model.HasSessions)
+                    {
+                        foreach (FakeSNWLSession session in Model.Sessions)
+                        {
+                            <tr>
+                                <td>@session.Status</td>
+                                <td>@session.ID.Substring(0, 12)...</td>
+                                <td>@session.UserName</td>
+                                <td>@session.IP</td>
+                                <td>@session.MAC</td>
+                                <td>@session.Idle</td>
+                                <td>@session.RxBytes</td>
+                                <td>@session.TxBytes</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">
+                                            Session Action <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#" class="session-action-adminlogout" data-session-id="@session.ID">Admin Logout</a></li>
+                                            <li><a href="#" class="session-action-sessiontimeout" data-session-id="@session.ID">Session Timeout</a></li>
+                                            <li><a href="#" class="session-action-idletimeout" data-session-id="@session.ID">Idle Timeout</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td>No data</td>
+                        </tr>
+
+                    }
+                }
+            </tbody>
+        </table>
+        <hr />
+    </div>
+</div>

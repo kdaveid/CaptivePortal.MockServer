@@ -1,0 +1,87 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h4>Response Settings</h4>
+        <div class="col-lg-12">
+            <div class="row">
+                <h4><span class="label label-warning">Login:</span></h4>
+                <form action="api/settings/login" method="post">
+                    <div class="form-group">
+                        <select name="code" class="form-control">
+                            <option value="@ResponseHelper.Login.LOGIN_SUCCEEDED">Login success</option>
+                            <option value="@ResponseHelper.Login.SESSION_LIMIT_EXCEEDED">Session limit exceeded</option>
+                            <option value="@ResponseHelper.Login.LOGIN_FAILED">Login fails</option>
+                            <option value="@ResponseHelper.Login.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                            <option value="@ResponseHelper.Login.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                            <option value="@ResponseHelper.Login.INVALID_SESSION_ID">Invalid Session Id</option>
+                            <option value="@ResponseHelper.Login.INTERNAL_ERROR">Internal error</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <input type="button" name="Update" value="Set" class="btn btn-primary" id="form_login_submit" />
+                            </div>
+                            <div class="col col-sm-10 col-xs-12">
+                                <p class="alert alert-warning update-warning hidden"></p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr />
+        </div>
+        <div class="col-lg-12">
+            <div class="row">
+                <h4><span class="label label-warning">Logoff:</span></h4>
+                <form action="api/settings/logoff" method="post">
+                    <div class="form-group">
+                        <select name="code" class="form-control">
+                            <option value="@ResponseHelper.Logoff.LOGOFF_SUCCEEDED">Logoff success</option>
+                            <option value="@ResponseHelper.Logoff.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                            <option value="@ResponseHelper.Logoff.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                            <option value="@ResponseHelper.Logoff.INVALID_SESSION_ID">Invalid Session Id</option>
+                            <option value="@ResponseHelper.Logoff.INTERNAL_ERROR">Internal error</option>
+                        </select>
+                    </div><div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <input type="button" name="Update" value="Set" class="btn btn-primary" id="form_logoff_submit" />
+                            </div>
+                            <div class="col-xs-12">
+                                <p class="alert alert-warning update-warning hidden"></p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <hr />
+        </div>
+        <div class="col-lg-12">
+            <div class="row">
+                <h4><span class="label label-warning">Update:</span></h4>
+                <form action="api/settings/updatesession" method="post">
+                    <div class="form-group">
+
+                        <select name="code" class="form-control">
+                            <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_SUCCEEDED">Session Update succeeds</option>
+                            <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_FAILED">Session Update fails</option>
+                            <option value="@ResponseHelper.UpdateSession.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                            <option value="@ResponseHelper.UpdateSession.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                            <option value="@ResponseHelper.UpdateSession.INTERNAL_ERROR">Internal error</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <input type="button" name="Update" value="Set" class="btn btn-primary" id="form_updatesession_submit" />
+                            </div>
+                            <div class="col-xs-12">
+                                <p class="alert alert-warning update-warning hidden"></p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
