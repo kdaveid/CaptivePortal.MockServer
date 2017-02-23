@@ -26,7 +26,7 @@ namespace Dkbe.CaptivePortal.MockServer
         {
             services.AddOptions();
             services.AddStateProvider();
-            services.Configure<StaticZoneSettings>(Configuration.GetSection("AppSettings:StaticZoneSettings"));
+            services.Configure<StaticZoneSettings>(Configuration.GetSection(nameof(StaticZoneSettings)));
             services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
             services.Configure<CaptivePortalSettings>(Configuration.GetSection(nameof(CaptivePortalSettings)));
             services.AddMvc().AddXmlSerializerFormatters();

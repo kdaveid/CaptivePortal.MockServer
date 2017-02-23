@@ -6,8 +6,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Dkbe.CaptivePortal.MockServer.Controllers
 {
@@ -31,6 +34,9 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             var viewModel = new IndexViewModel();
             viewModel.StaticZones = _stateProvider.StaticZones;
             viewModel.Sessions = _stateProvider.GetGeneratedSessions.OrderByDescending(s => s.SessionRemaining);
+            viewModel.CurrentLoginReplyCode = _stateProvider.LoginReplyCode;
+            viewModel.CurrentUpdateSessionReplyCode = _stateProvider.UpdateSessionReplyCode;
+            viewModel.CurrentLogoffReplyCode = _stateProvider.LogoffReplyCode;
             return View(viewModel);
         }
 
@@ -54,7 +60,7 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             };
 
             // keep track of generated models for session sync
-            _stateProvider.AddGeneratedSession(model.Map());
+            _stateProvider.AddGeneratedSession(model.Map(zoneModel));
 
             var fullUrl = string.Concat(_settings.GetLoginPage(zoneModel.LocalPath), buildQueryString(model));
 
@@ -91,6 +97,9 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             {
                 case ResponseHelper.Login.LOGIN_SUCCEEDED:
                     responseModel = ResponseHelper.Login.LoginSucceededResponse();
+                    break;
+                case ResponseHelper.Login.SESSION_LIMIT_EXCEEDED:
+                    responseModel = ResponseHelper.Login.SessionLimitExceededResponse();
                     break;
                 case ResponseHelper.Login.LOGIN_FAILED:
                     responseModel = ResponseHelper.Login.LoginFailedResponse();
@@ -190,15 +199,57 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
         [HttpGet("invoke-sessionsync/{zone}")]
         public IActionResult InvokeSessionSync(string zone)
         {
-            throw new NotImplementedException();
+            var loggedInZoneSessions = _stateProvider.GetGeneratedSessions
+                                    .Where(s => 
+                                        s.Status == SessionStatus.LOGIN_SUCCEEDED && 
+                                        s.Zone.Name.Equals(zone, StringComparison.CurrentCultureIgnoreCase
+                                        ));
 
-            //var client = new HttpClient();
-            //var httpContent = new FormUrlEncodedContent();
+            var requestModel = new SNWLSessionSyncRequest
+            {
+                SessionSync = new SNWLSessionSync
+                {
+                    SessionCount = loggedInZoneSessions.Count(),
+                    SessionList = loggedInZoneSessions.Cast<SNWLSession>().ToArray()
 
-            //var response = client.PostAsync(_settings.GetSessionSyncEndpoint(zone), content).Result;
-            //response.EnsureSuccessStatusCode();
+                }
+            };
+            
+            var client = new HttpClient();
 
-            //return Ok();
+            var serializedRequestModel = Serializers.Serialize(requestModel);
+
+            var formContent = new FormUrlEncodedContent(
+                new List<KeyValuePair<string, string>>() {
+                    new KeyValuePair<string, string>("sessionList", serializedRequestModel)
+                });
+
+            var response = client.PostAsync(_settings.GetSessionSyncEndpoint(zone), formContent).Result;
+            response.EnsureSuccessStatusCode();
+
+            var serializer = new XmlSerializer(typeof(SNWLSessionStateSyncReply));
+            var responseString = response.Content.ReadAsStringAsync().Result;
+
+            SNWLSessionStateSyncReply reply;
+
+            try
+            {
+                using (var reader = new StringReader(responseString))
+                {
+                    reply = (SNWLSessionStateSyncReply)serializer.Deserialize(reader);
+                }
+            }
+            catch (Exception)
+            {
+                var msg = $"Can not deserialize sessionList. Payload: {responseString}";
+                _logger.LogCritical(msg);
+                return Json(new { success = false, message = msg });
+            }
+
+            if (reply.SessionSync.ResponseCode != ResponseHelper.SessionSync.SESSION_SYNC_SUCCESS)
+                return Json(new { success = false, message = "CaptivePortal returned failed code.", responsecode = reply.SessionSync.ResponseCode });
+
+            return Json(new { success = true, message = "OK", responsecode = reply.SessionSync.ResponseCode }); ;
         }
 
         [HttpGet("invoke-autologout")]
@@ -273,8 +324,32 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
             ViewBag.Message = message;
             return View();
         }
+
     }
 
+    public static class Serializers
+    {
+        public static string Serialize<T>(this T value) 
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+            try
+            {
+                var xmlserializer = new XmlSerializer(typeof(T));
+                var stringWriter = new StringWriter();
+                using (var writer = XmlWriter.Create(stringWriter))
+                {
+                    xmlserializer.Serialize(writer, value);
+                    return stringWriter.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred", ex);
+            }
+        }
 
-
+    }
 }

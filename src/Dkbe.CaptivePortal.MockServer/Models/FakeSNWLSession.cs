@@ -4,7 +4,11 @@ namespace Dkbe.CaptivePortal.MockServer.Models
 {
     public class FakeSNWLSession : SNWLSession
     {
+        public FakeSNWLSession(StaticZone zone) { Zone = zone; }
+
         public SessionStatus Status { get; set; } = 0;
+
+        public StaticZone Zone { get; private set; }
     }
 
     public enum SessionStatus

@@ -4,26 +4,39 @@
 }
 
 <div class="row">
-    <h3>Simple redirections</h3>
+    <h3>Zone actions</h3>
     <p>These links just open the according pages on Captive Portal web app.</p>
+
     @{ foreach (StaticZone zone in Model.StaticZones)
-        {
-            <div class="col-md-2 col-s-12">Zone: @zone.Name</div>
-            <div class="col-md-2 col-s-12"><a href="signin/@zone.LocalPath" class="btn btn-default" target="_blank">Login</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-session-expiration/@zone.LocalPath" class="btn btn-default" target="_blank">Session Expiration</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-idle-timeout/@zone.LocalPath" class="btn btn-default" target="_blank">Idle Timeout</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-max-session/@zone.LocalPath" class="btn btn-default" target="_blank">Max Sessions reached</a></div>
-            <div class="col-md-2 col-s-12"><a href="redirect-to-traffic-excceeded/@zone.LocalPath" class="btn btn-default" target="_blank">Traffic exceeded</a></div>
+            {
+            <div class="row">
+                <div class="col col-md-2 col-sm-12">
+                    <h5>@zone.Name</h5>
+                </div>
+                <div class="col col-md-10 col-sm-12">
+                    <div class="btn-group btn-group-xs btn-group-justified">
+                        <a href="signin/@zone.LocalPath" class="btn btn-primary" target="_blank">Login</a>
+                        <a href="redirect-to-session-expiration/@zone.LocalPath" class="btn btn-primary" target="_blank">Session Expiration</a>
+                        <a href="redirect-to-idle-timeout/@zone.LocalPath" class="btn btn-primary" target="_blank">Idle Timeout</a>
+                        <a href="redirect-to-max-session/@zone.LocalPath" class="btn btn-primary" target="_blank">Max Sessions reached</a>
+                        <a href="redirect-to-traffic-excceeded/@zone.LocalPath" class="btn btn-primary" target="_blank">Traffic exceeded</a>
+                        <a href="#" class="btn btn-info btn-xs invoke_session_sync" data-zone="@zone.LocalPath">Invoke Session Sync</a>
+                    </div>
+                </div>
+            </div>
         }
     }
+    <p id="session_sync_result" class="alert alert-dismissable alert-success hidden"></p>
+    <hr />
 </div>
-<hr />
+
 <div class="row">
     <h3>Current Sessions</h3>
 
     <table class="table table-responsive">
         <thead>
             <tr>
+                <td>Status</td>
                 <td>ID</td>
                 <td>UserName</td>
                 <td>IP</td>
@@ -37,19 +50,18 @@
             @{
                 if (Model.HasSessions)
                 {
-                    foreach (SNWLSession session in Model.Sessions)
+                    foreach (FakeSNWLSession session in Model.Sessions)
                     {
                         <tr>
-                            <td>@session.ID</td>
+                            <td>@session.Status</td>
+                            <td>@session.ID.Substring(0, 12)...</td>
                             <td>@session.UserName</td>
                             <td>@session.IP</td>
                             <td>@session.MAC</td>
                             <td>@session.Idle</td>
                             <td>@session.RxBytes</td>
                             <td>@session.TxBytes</td>
-                            <td>
-
-                            </td>
+                            <td></td>
                         </tr>
                     }
                 }
@@ -63,69 +75,95 @@
             }
         </tbody>
     </table>
+    <hr />
 </div>
 
-<hr />
+
 
 <div class="row">
-    <div class="col-md-3">
-        <input type="button" value="Invoke Session Sync" class="btn btn-default disabled" id="invoke_session_sync" />
+    <h3>Mock Server Settings</h3>
+    <div class="col-md-4">
+        <div class="row">
+            <h4><span class="label label-warning">Login:</span></h4>
+            <form action="api/settings/login" method="post">
+                <div class="form-group">
+                    <select name="code" class="form-control">
+                        <option value="@ResponseHelper.Login.LOGIN_SUCCEEDED">Login success</option>
+                        <option value="@ResponseHelper.Login.SESSION_LIMIT_EXCEEDED">Session limit exceeded</option>
+                        <option value="@ResponseHelper.Login.LOGIN_FAILED">Login fails</option>
+                        <option value="@ResponseHelper.Login.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                        <option value="@ResponseHelper.Login.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                        <option value="@ResponseHelper.Login.INVALID_SESSION_ID">Invalid Session Id</option>
+                        <option value="@ResponseHelper.Login.INTERNAL_ERROR">Internal error</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col col-sm-2 col-xs-12">
+                            <input type="button" name="Update" value="Set" class="btn btn-primary" id="form_login_submit" />
+                        </div>
+                        <div class="col col-sm-10 col-xs-12">
+                            <p class="alert alert-warning update-warning hidden"></p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <h4><span class="label label-warning">Logoff:</span></h4>
+            <form action="api/settings/logoff" method="post">
+                <div class="form-group">
+
+                    <select name="code" class="form-control">
+                        <option value="@ResponseHelper.Logoff.LOGOFF_SUCCEEDED">Logoff success</option>
+                        <option value="@ResponseHelper.Logoff.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                        <option value="@ResponseHelper.Logoff.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                        <option value="@ResponseHelper.Logoff.INVALID_SESSION_ID">Invalid Session Id</option>
+                        <option value="@ResponseHelper.Logoff.INTERNAL_ERROR">Internal error</option>
+                    </select>
+                </div><div class="form-group">
+                    <div class="row">
+                        <div class="col col-sm-2 col-xs-12">
+                            <input type="button" name="Update" value="Set" class="btn btn-primary" id="form_logoff_submit" />
+                        </div>
+                        <div class="col col-sm-10 col-xs-12">
+                            <p class="alert alert-warning update-warning hidden"></p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <h4><span class="label label-warning">Update:</span></h4>
+            <form action="api/settings/updatesession" method="post">
+                <div class="form-group">
+
+                    <select name="code" class="form-control">
+                        <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_SUCCEEDED">Session Update succeeds</option>
+                        <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_FAILED">Session Update fails</option>
+                        <option value="@ResponseHelper.UpdateSession.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
+                        <option value="@ResponseHelper.UpdateSession.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
+                        <option value="@ResponseHelper.UpdateSession.INTERNAL_ERROR">Internal error</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col col-sm-2 col-xs-12">
+                            <input type="button" name="Update" value="Set" class="btn btn-primary" id="form_updatesession_submit" />
+                        </div>
+                        <div class="col col-sm-10 col-xs-12">
+                            <p class="alert alert-warning update-warning hidden"></p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-<hr />
-
-<div class="row">
-    <div class="col-md-3">
-        <h5>Session login produces...</h5>
-        <form action="api/settings/login" method="post">
-            <select name="code" class="form-control">
-                <option value="@ResponseHelper.Login.LOGIN_SUCCEEDED">Login success</option>
-                <option value="@ResponseHelper.Login.SESSION_LIMIT_EXCEEDED">Session limit exceeded</option>
-                <option value="@ResponseHelper.Login.LOGIN_FAILED">Login fails</option>
-                <option value="@ResponseHelper.Login.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
-                <option value="@ResponseHelper.Login.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
-                <option value="@ResponseHelper.Login.INVALID_SESSION_ID">Invalid Session Id</option>
-                <option value="@ResponseHelper.Login.INTERNAL_ERROR">Internal error</option>
-            </select>
-            <input type="button" name="Update" value="Update" class="btn btn-danger" id="form_login_submit" />
-            <p class="alert alert-warning update-warning hidden"></p>
-        </form>
-    </div>
-    <div class="col-md-3">
-        <h5>Session logoff produces...</h5>
-        <form action="api/settings/logoff" method="post">
-            <select name="code" class="form-control">
-                <option value="@ResponseHelper.Logoff.LOGOFF_SUCCEEDED">Logoff success</option>
-                <option value="@ResponseHelper.Logoff.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
-                <option value="@ResponseHelper.Logoff.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
-                <option value="@ResponseHelper.Logoff.INVALID_SESSION_ID">Invalid Session Id</option>
-                <option value="@ResponseHelper.Logoff.INTERNAL_ERROR">Internal error</option>
-            </select>
-            <input type="button" name="Update" value="Update" class="btn btn-danger" id="form_logoff_submit" />
-            <p class="alert alert-warning update-warning hidden"></p>
-        </form>
-    </div>
-    <div class="col-md-3">
-        <h5>Update session produces...</h5>
-        <form action="api/settings/updatesession" method="post">
-            <select name="code" class="form-control">
-                <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_SUCCEEDED">Session Update succeeds</option>
-                <option value="@ResponseHelper.UpdateSession.SESSION_UPDATE_FAILED">Session Update fails</option>
-                <option value="@ResponseHelper.UpdateSession.INVALID_HMAC">Msg. Auth failed -- Invalid HMAC</option>
-                <option value="@ResponseHelper.UpdateSession.INVALID_OR_MISSING_PARAM">Invalid or missing CGI parameter</option>
-                <option value="@ResponseHelper.UpdateSession.INTERNAL_ERROR">Internal error</option>
-            </select>
-            <input type="button" name="Update" value="Update" class="btn btn-danger" id="form_updatesession_submit" />
-            <p class="alert alert-warning update-warning hidden"></p>
-        </form>
-    </div>
-</div>
-
-<hr />
-
-
-
 
 
 @section scripts{
@@ -174,5 +212,42 @@
             var text = '(' + $(elem).val() + ') ' + $(elem).text();
             $(elem).text(text);
         });
+
+        $('.invoke_session_sync').click(function (e) {
+            e.preventDefault();
+            var $btn = this;
+            var zone = $($btn).data('zone');
+            var url = '/invoke-sessionsync/' + zone;
+            var statusSelector = '#session_sync_result';
+            var $statusObj = $(statusSelector);
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (result) {
+                    var status = "Update success: " + result.success + ", Message: " + result.message;
+                    $statusObj.text(status);
+
+                    if (result.success) {
+                        $statusObj.addClass('alert-success').removeClass('alert-warning');
+                    } else {
+                        $statusObj.addClass('alert-warning').removeClass('alert-success');
+                    }
+
+
+                    if ($statusObj.is(':hidden')) {
+                        $statusObj.removeClass('hidden');
+                        $statusObj.slideDown();
+                    }
+                }
+            }).fail(function (err) {
+                var status = "Could not send sync request";
+                $statusObj.text(status);
+                $statusObj.removeClass('alert-success').addClass('alert-error');
+                if ($statusObj.is(":hidden"))
+                    $statusObj.slideDown();
+            });
+        });
+
     </script>
 }

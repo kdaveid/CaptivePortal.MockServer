@@ -10,8 +10,14 @@ namespace Dkbe.CaptivePortal.MockServer.Models
     {
         public IEnumerable<StaticZone> StaticZones { get; set; }
 
-        public IEnumerable<SNWLSession> Sessions { get; set; }
+        public IEnumerable<FakeSNWLSession> Sessions { get; set; }
 
         public bool HasSessions { get { return Sessions.Any(); } }
+
+        public int CurrentLoginReplyCode { get; set; }
+
+        public int CurrentUpdateSessionReplyCode { get; set; }
+
+        public int CurrentLogoffReplyCode { get; set; }
     }
 }

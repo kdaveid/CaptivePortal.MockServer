@@ -4,9 +4,9 @@ namespace Dkbe.CaptivePortal.MockServer.Models
 {
     public static class ModelExtensions
     {
-        public static FakeSNWLSession Map(this SNWLExternalAuthenticationRedirectModel requestModel)
+        public static FakeSNWLSession Map(this SNWLExternalAuthenticationRedirectModel requestModel, StaticZone zone)
         {
-            return new FakeSNWLSession
+            return new FakeSNWLSession(zone)
             {
                 ID = requestModel.SessionId,
                 IP = requestModel.IP,
