@@ -55,6 +55,7 @@ $('.invoke_session_sync').click(function (e) {
     $.ajax({
         type: 'GET',
         url: url,
+        dataType: 'json',
         success: function (result) {
             var status = "Update success: " + result.success + ", Message: " + result.message;
             $statusObj.text(status);
@@ -91,6 +92,7 @@ $('.invoke_serverstatuscheck').click(function (e) {
     $.ajax({
         type: 'GET',
         url: url,
+        dataType: 'json',
         success: function (result) {
             var status = "Status check success: " + result.success + ", Message: " + result.message;
             $statusObj.text(status);
@@ -128,6 +130,7 @@ $('.invoke_autologout').click(function (e) {
     $.ajax({
         type: 'GET',
         url: url,
+        dataType: 'json',
         success: function (result) {
             var status = "Autologout success: " + result.success + ", Message: " + result.message;
             $statusObj.text(status);
