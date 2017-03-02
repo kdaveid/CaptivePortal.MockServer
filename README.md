@@ -36,15 +36,4 @@ See [contributing](./CONTRIBUTING.md)
 
 We're currently deciding about open source our CaptivePortal project. It is a ASP.NET Core 1.1 web application with a UI and manage website still being built.
 
-Please make sure that you update `application.development.json` file within CaptivePortal web app accordingly: 
-```
-{
-    "AppSettings" : {
-        "SNWLBaseUrl" : "http://localhost:5001"
-        ...
-    }
-}
-...
-```
-_OR_ you can set the environment variable `ASPNETCORE_ENVIRONMENT` to `dev-mockserver`. Doing this, the Captive Portal web server will pick up the `appsettings.dev-mockserver.json` file.
 
