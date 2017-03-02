@@ -1,0 +1,45 @@
+version: '1.0.{build}'
+
+image: Visual Studio 2015
+
+pull_requests:
+  # Do not increment build number for pull requests
+  do_not_increment_build_number: true
+ 
+nuget:
+  # Do not publish NuGet packages for pull requests
+  disable_publish_on_pr: true
+ 
+environment:
+  # Set the DOTNET_SKIP_FIRST_TIME_EXPERIENCE environment variable to stop wasting time caching packages
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Disable sending usage data to Microsoft
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+ 
+build_script:
+- cmd: PowerShell -Version 2.0 .\build.ps1
+ 
+test: off
+ 
+artifacts:
+# Store NuGet packages
+- path: ./artifacts/packages/*.nupkg
+  name: NuGet
+# Store xUnit Test Results
+- path: ./artifacts/**/*.xml
+  name: xUnit Test Results
+ 
+deploy:
+ 
+# Publish NuGet packages
+- provider: NuGet
+  name: production
+  api_key:
+    secure: HJtrpuuBZtoHYpXfOnY762bXQ9kIFVYnApLBV/ts0aakLHP7GiKAZ0I1LeEE6nL5
+  on:
+    # Only publish from the master branch
+    branch: release
+    # Only publish if the trigger was a Git tag
+    # git tag v0.1.0-beta
+    # git push origin --tags
+    # appveyor_repo_tag: true
