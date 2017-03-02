@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) David E. Keller. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 namespace Dkbe.CaptivePortal.MockServer.Models
 {
@@ -12,14 +10,14 @@ namespace Dkbe.CaptivePortal.MockServer.Models
     public class CaptivePortalEndpoints
     {
         /// <summary>
-        /// Login Page. Sonicwall redirects the client with SessionId etc. to this page. 
-        /// This setting should include a {zone} string identifier. 
+        /// Login Page. Sonicwall redirects the client with SessionId etc. to this page.
+        /// This setting should include a {zone} string identifier.
         /// Example: zone1/signin
         /// </summary>
         public string LoginPage { get; set; }
 
         /// <summary>
-        /// Session Expiration Page. In case of a session expiration 
+        /// Session Expiration Page. In case of a session expiration
         /// SNWL will redirect the user to this URL
         /// </summary>
         public string SessionExpirationPage { get; set; }

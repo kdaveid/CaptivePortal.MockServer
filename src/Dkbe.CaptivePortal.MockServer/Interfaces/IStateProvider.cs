@@ -1,4 +1,7 @@
-﻿using Dkbe.CaptivePortal.MockServer.Models;
+﻿// Copyright (c) David E. Keller. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Dkbe.CaptivePortal.MockServer.Models;
 using Dkbe.CaptivePortal.Models.SonicOS;
 using System.Collections.Generic;
 
@@ -41,13 +44,13 @@ namespace Dkbe.CaptivePortal.MockServer
         void AddGeneratedSession(FakeSNWLSession session);
 
         /// <summary>
-        /// Processes official (to LHM standard) requested login 
+        /// Processes official (to LHM standard) requested login
         /// </summary>
         /// <param name="loginRequestModel">SNWL login model which comes from CaptivePortal</param>
         void ProcessLoginRequest(SNWLExternalAuthenticationRequest loginRequestModel);
 
         /// <summary>
-        /// Processes official (to LHM standard) requested update 
+        /// Processes official (to LHM standard) requested update
         /// </summary>
         /// <param name="updateRequestModel">SNWL update model which comes from CaptivePortal</param>
         void ProcessUpdateRequest(SNWLUpdateSessionRequest updateRequestModel);

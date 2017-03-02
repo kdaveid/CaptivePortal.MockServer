@@ -1,4 +1,15 @@
 {
+  "version": "0.2.0",
+  "authors": [ "David E. Keller" ],
+  "description": "Imitates a SonicWALL appliance for development of an external authentication server (captive portal).",
+
+  "packOptions": {
+    "tags": [ "MockServer",  "CaptivePortal", "External Authentication", "SonicWALL", "SonicOS" ],
+    "projectUrl": "https://github.com/kdaveid/CaptivePortal.MockServer",
+    "licenseUrl": "https://github.com/kdaveid/CaptivePortal.MockServer/blob/master/LICENSE"
+ },
+
+
   "dependencies": {
     "BundlerMinifier.Core": "2.4.337",
     "Dkbe.CaptivePortal.Models.SonicOS": "1.0.0",
@@ -33,7 +44,7 @@
   },
 
   "frameworks": {
-    "netcoreapp1.1": {    }
+    "netcoreapp1.1": {}
   },
   "buildOptions": {
     "emitEntryPoint": true,

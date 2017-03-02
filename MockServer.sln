@@ -10,12 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CaptivePortal.Infrastructure", "..\CaptivePortal\src\Dkbe.CaptivePortal.Infrastructure\CaptivePortal.Infrastructure.xproj", "{2C72954D-DAAD-43B1-88A2-3AA411A54112}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CaptivePortal.Models", "..\CaptivePortal\src\Dkbe.CaptivePortal.Models\CaptivePortal.Models.xproj", "{9C43E8E8-EFF9-4545-836C-354DA4FF2164}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{780A6B54-3DFA-4A60-A934-23663391A5E5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,20 +20,8 @@ Global
 		{362EB14B-23ED-41E6-B2A4-98CEDE054931}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{362EB14B-23ED-41E6-B2A4-98CEDE054931}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{362EB14B-23ED-41E6-B2A4-98CEDE054931}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C72954D-DAAD-43B1-88A2-3AA411A54112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C72954D-DAAD-43B1-88A2-3AA411A54112}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C72954D-DAAD-43B1-88A2-3AA411A54112}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C72954D-DAAD-43B1-88A2-3AA411A54112}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C43E8E8-EFF9-4545-836C-354DA4FF2164}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C43E8E8-EFF9-4545-836C-354DA4FF2164}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C43E8E8-EFF9-4545-836C-354DA4FF2164}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C43E8E8-EFF9-4545-836C-354DA4FF2164}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{2C72954D-DAAD-43B1-88A2-3AA411A54112} = {780A6B54-3DFA-4A60-A934-23663391A5E5}
-		{9C43E8E8-EFF9-4545-836C-354DA4FF2164} = {780A6B54-3DFA-4A60-A934-23663391A5E5}
 	EndGlobalSection
 EndGlobal

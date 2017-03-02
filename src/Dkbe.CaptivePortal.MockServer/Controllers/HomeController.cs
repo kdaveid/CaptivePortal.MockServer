@@ -1,4 +1,7 @@
-﻿using Dkbe.CaptivePortal.MockServer.Models;
+﻿// Copyright (c) David E. Keller. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Dkbe.CaptivePortal.MockServer.Models;
 using Dkbe.CaptivePortal.MockServer.Services;
 using Dkbe.CaptivePortal.Models.SonicOS;
 using Microsoft.AspNetCore.Mvc;
@@ -31,12 +34,14 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
 
         public IActionResult Index()
         {
-            var viewModel = new IndexViewModel();
-            viewModel.StaticZones = _stateProvider.StaticZones;
-            viewModel.Sessions = _stateProvider.GetGeneratedSessions.OrderByDescending(s => s.SessionRemaining);
-            viewModel.CurrentLoginReplyCode = _stateProvider.LoginReplyCode;
-            viewModel.CurrentUpdateSessionReplyCode = _stateProvider.UpdateSessionReplyCode;
-            viewModel.CurrentLogoffReplyCode = _stateProvider.LogoffReplyCode;
+            var viewModel = new IndexViewModel
+            {
+                StaticZones = _stateProvider.StaticZones,
+                Sessions = _stateProvider.GetGeneratedSessions.OrderByDescending(s => s.SessionRemaining),
+                CurrentLoginReplyCode = _stateProvider.LoginReplyCode,
+                CurrentUpdateSessionReplyCode = _stateProvider.UpdateSessionReplyCode,
+                CurrentLogoffReplyCode = _stateProvider.LogoffReplyCode
+            };
             return View(viewModel);
         }
 
@@ -200,8 +205,8 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
         public IActionResult InvokeSessionSync(string zone)
         {
             var loggedInZoneSessions = _stateProvider.GetGeneratedSessions
-                                    .Where(s => 
-                                        s.Status == SessionStatus.LOGIN_SUCCEEDED && 
+                                    .Where(s =>
+                                        s.Status == SessionStatus.LOGIN_SUCCEEDED &&
                                         s.Zone.Name.Equals(zone, StringComparison.CurrentCultureIgnoreCase
                                         ));
 
@@ -214,42 +219,43 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
 
                 }
             };
-            
-            var client = new HttpClient();
 
-            var serializedRequestModel = Serializers.Serialize(requestModel);
+            using (var client = new HttpClient())
+            {
+                var serializedRequestModel = Serializers.Serialize(requestModel);
 
-            var formContent = new FormUrlEncodedContent(
-                new List<KeyValuePair<string, string>>() {
+                var formContent = new FormUrlEncodedContent(
+                    new List<KeyValuePair<string, string>> {
                     new KeyValuePair<string, string>("sessionList", serializedRequestModel)
-                });
+                    });
 
-            var response = client.PostAsync(_settings.GetSessionSyncEndpoint(zone), formContent).Result;
-            response.EnsureSuccessStatusCode();
+                var response = client.PostAsync(_settings.GetSessionSyncEndpoint(zone), formContent).Result;
+                response.EnsureSuccessStatusCode();
 
-            var serializer = new XmlSerializer(typeof(SNWLSessionStateSyncReply));
-            var responseString = response.Content.ReadAsStringAsync().Result;
+                var serializer = new XmlSerializer(typeof(SNWLSessionStateSyncReply));
+                var responseString = response.Content.ReadAsStringAsync().Result;
 
-            SNWLSessionStateSyncReply reply;
+                SNWLSessionStateSyncReply reply;
 
-            try
-            {
-                using (var reader = new StringReader(responseString))
+                try
                 {
-                    reply = (SNWLSessionStateSyncReply)serializer.Deserialize(reader);
+                    using (var reader = new StringReader(responseString))
+                    {
+                        reply = (SNWLSessionStateSyncReply)serializer.Deserialize(reader);
+                    }
                 }
-            }
-            catch (Exception)
-            {
-                var msg = $"Can not deserialize sessionList. Payload: {responseString}";
-                _logger.LogCritical(msg);
-                return Json(new { success = false, message = msg });
-            }
+                catch (Exception)
+                {
+                    var msg = $"Can not deserialize sessionList. Payload: {responseString}";
+                    _logger.LogCritical(msg);
+                    return Json(new { success = false, message = msg });
+                }
 
-            if (reply.SessionSync.ResponseCode != ResponseHelper.SessionSync.SESSION_SYNC_SUCCESS)
-                return Json(new { success = false, message = "CaptivePortal returned failed code.", responsecode = reply.SessionSync.ResponseCode });
+                if (reply.SessionSync.ResponseCode != ResponseHelper.SessionSync.SESSION_SYNC_SUCCESS)
+                    return Json(new { success = false, message = "CaptivePortal returned failed code.", responsecode = reply.SessionSync.ResponseCode });
 
-            return Json(new { success = true, message = "OK", responsecode = reply.SessionSync.ResponseCode }); ;
+                return Json(new { success = true, message = "OK", responsecode = reply.SessionSync.ResponseCode }); ;
+            }
         }
 
         [HttpGet("invoke-autologout")]
@@ -269,24 +275,25 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
         [HttpGet("invoke-serverstatuscheck")]
         public IActionResult InvokeServerStatusCheck()
         {
-            var client = new HttpClient();
+            using (var client = new HttpClient())
+            {
+                var response = client.GetAsync(_settings.GetServerStatusCheckEndpoint()).Result;
+                response.EnsureSuccessStatusCode();
 
-            var response = client.GetAsync(_settings.GetServerStatusCheckEndpoint()).Result;
-            response.EnsureSuccessStatusCode();
+                // TODO: parse result
 
-            // TODO: parse result
+                // TODO: check return code
 
-            // TODO: check return code
+                // TODO: return JSON
 
-            // TODO: return JSON
-
-            return Ok();
+                return Ok();
+            }
         }
 
         [HttpPost("set-session-remaining")]
         public IActionResult SetSessionRemaining(string sessionid, int remaining)
         {
-            var session = _stateProvider.GetGeneratedSessions.Where(s => s.ID == sessionid).SingleOrDefault();
+            var session = _stateProvider.GetGeneratedSessions.SingleOrDefault(s => s.ID == sessionid);
             session.SessionRemaining = remaining;
             return Ok();
         }
@@ -329,7 +336,7 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
 
     public static class Serializers
     {
-        public static string Serialize<T>(this T value) 
+        public static string Serialize<T>(this T value)
         {
             if (value == null)
             {
