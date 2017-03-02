@@ -2,7 +2,8 @@
 
 This is the project for mocking a SonicWALL Guest Auth endpoints. It imitates a SonicWALL appliance for development of an external authentication server (captive portal).
 
-[![Build status](https://ci.appveyor.com/api/projects/status/7y0jqbattdgeui7t?svg=true)](https://ci.appveyor.com/project/kdaveid/captiveportal-mockserver)
+[![Build status](https://ci.appveyor.com/api/projects/status/93t0t4e8fgs9518c?svg=true)](https://ci.appveyor.com/project/kdaveid/captiveportal-mockserver)
+
 
 ### Platform
 
