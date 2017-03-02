@@ -45,7 +45,7 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
         {
             var zoneModel = _zones.Single(s => s.LocalPath.Equals(zone, StringComparison.CurrentCultureIgnoreCase));
 
-            if (zoneModel == null) return RedirectToAction(nameof(Error), new { message = $"Could not find {nameof(CaptivePortal.Models.Zone)} for \"zone\"" });
+            if (zoneModel == null) return RedirectToAction(nameof(Error), new { message = $"Could not find Zone for \"zone\"" });
 
             var model = new SNWLExternalAuthenticationRedirectModel
             {
