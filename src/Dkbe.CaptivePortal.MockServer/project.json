@@ -57,7 +57,7 @@
   },
   "scripts": {
     "precompile": [
-      "dotnet bundle"
+      "bower install", "dotnet bundle"
     ]
   }
 }
