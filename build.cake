@@ -12,7 +12,7 @@ var configuration   = Argument<string>("configuration", "Release");
 
 var isLocalBuild        = !AppVeyor.IsRunningOnAppVeyor;
 
-var packPath            = Directory("./src/Dkbe.CaptivePortal.Models.SonicOS");
+var packPath            = Directory("./src/Dkbe.CaptivePortal.MockServer");
 
 var sourcePath          = Directory("./src");
 
