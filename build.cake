@@ -58,54 +58,6 @@ Task("Build")
 
 
 
-Task("RunTests")
-
-    .IsDependentOn("Restore")
-
-    .IsDependentOn("Clean")
-
-    .Does(() =>
-
-{
-
-    var projects = GetFiles("./test/**/project.json");
-
-
-
-    foreach(var project in projects)
-
-	{
-
-        var settings = new DotNetCoreTestSettings
-
-        {
-
-            Configuration = configuration
-
-        };
-
-
-
-        if (!IsRunningOnWindows())
-
-        {
-
-            Information("Not running on Windows - skipping tests for full .NET Framework");
-
-            settings.Framework = "netcoreapp1.1";
-
-        }
-
-
-
-        DotNetCoreTest(project.GetDirectory().FullPath, settings);
-
-    }
-
-});
-
-
-
 Task("Pack")
 
     .IsDependentOn("Restore")
@@ -185,8 +137,6 @@ Task("Restore")
 Task("Default")
 
   .IsDependentOn("Build")
-
-  .IsDependentOn("RunTests")
 
   .IsDependentOn("Pack");
 
