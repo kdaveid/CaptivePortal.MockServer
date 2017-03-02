@@ -58,6 +58,9 @@
   "scripts": {
     "precompile": [
       "dotnet bundle"
+    ],
+    "prepublish": [
+      "npm install", "bower install"
     ]
   }
 }
