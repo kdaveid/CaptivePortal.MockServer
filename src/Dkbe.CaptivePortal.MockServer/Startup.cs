@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) David E. Keller. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Dkbe.CaptivePortal.MockServer.Models;
+using Dkbe.CaptivePortal.MockServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Dkbe.CaptivePortal.MockServer.Models;
-using Dkbe.CaptivePortal.MockServer.Services;
 
 namespace Dkbe.CaptivePortal.MockServer
 {
@@ -28,9 +27,11 @@ namespace Dkbe.CaptivePortal.MockServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddStateProvider(s => s.ZoneNames = new string[] { "lerngarage" });
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
+            services.AddOptions();
+            services.AddStateProvider();
+            services.Configure<StaticZoneSettings>(Configuration.GetSection(nameof(StaticZoneSettings)));
+            services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
+            services.Configure<CaptivePortalSettings>(Configuration.GetSection(nameof(CaptivePortalSettings)));
             services.AddMvc().AddXmlSerializerFormatters();
         }
 
@@ -39,19 +40,11 @@ namespace Dkbe.CaptivePortal.MockServer
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
+            app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
 
             app.Use(next =>
-            {
+            {   // Simple middleware to fake SNWL headers
                 return ctx =>
                 {
                     ctx.Response.Headers.Remove("Server");

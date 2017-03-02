@@ -1,11 +1,14 @@
-﻿using System;
+﻿// Copyright (c) David E. Keller. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using System;
 using System.Text;
 
 namespace Dkbe.CaptivePortal.MockServer.Services
 {
     /// <summary>
-    /// Quelle: http://stackoverflow.com/questions/10161291/generate-a-random-mac-address
-    /// Quelle: https://social.msdn.microsoft.com/Forums/en-US/369abcdb-c201-43fd-a555-0afbe5409d78/generate-random-ip-addresss?forum=csharpgeneral
+    /// Source: http://stackoverflow.com/questions/10161291/generate-a-random-mac-address
+    /// Source: https://social.msdn.microsoft.com/Forums/en-US/369abcdb-c201-43fd-a555-0afbe5409d78/generate-random-ip-addresss?forum=csharpgeneral
     /// </summary>
     public static class FakeDataGenerator
     {
@@ -26,7 +29,7 @@ namespace Dkbe.CaptivePortal.MockServer.Services
                 if (i == 0)
                 {
                     b = setBit(b, 6); //--> set locally administered
-                    b = unsetBit(b, 7); // --> set unicast 
+                    b = unsetBit(b, 7); // --> set unicast
                 }
                 sBuilder.Append(number.ToString("X2"));
             }

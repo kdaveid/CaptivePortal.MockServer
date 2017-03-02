@@ -1,0 +1,36 @@
+﻿@model IEnumerable<StaticZone>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Page previews and zone actions</h3>
+            <p>These links open the static pages on CaptivePortal.</p>
+
+            @{ foreach (StaticZone zone in Model)
+            {
+                    <div class="row">
+                        <div class="col col-md-2 col-sm-12">
+                            <h4>@zone.Name</h4>
+                        </div>
+                        <div class="col col-md-10 col-sm-12">
+                            <div class="btn-group btn-group-sm btn-group-justified">
+                                <a href="signin/@zone.LocalPath" class="btn btn-primary" target="_blank">Login</a>
+                                <a href="redirect-to-session-expiration/@zone.LocalPath" class="btn btn-primary" target="_blank">Session Expiration</a>
+                                <a href="redirect-to-idle-timeout/@zone.LocalPath" class="btn btn-primary" target="_blank">Idle Timeout</a>
+                                <a href="redirect-to-max-session/@zone.LocalPath" class="btn btn-primary" target="_blank">Max Sessions</a>
+                                <a href="redirect-to-traffic-excceeded/@zone.LocalPath" class="btn btn-primary" target="_blank">Traffic exceeded</a>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown">
+                                        Zone Action <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" class="invoke_session_sync" data-zone="@zone.LocalPath">Session Sync</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            <p id="session_sync_result" class="alert alert-dismissable alert-danger hidden"></p>
+        </div>
+    </div>

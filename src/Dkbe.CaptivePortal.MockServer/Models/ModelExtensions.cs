@@ -1,16 +1,15 @@
-﻿using Dkbe.CaptivePortal.Models.SonicOS;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) David E. Keller. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Dkbe.CaptivePortal.Models.SonicOS;
 
 namespace Dkbe.CaptivePortal.MockServer.Models
 {
     public static class ModelExtensions
     {
-        public static SNWLSession Map(this SNWLExternalAuthenticationRedirectModel requestModel)
+        public static FakeSNWLSession Map(this SNWLExternalAuthenticationRedirectModel requestModel, StaticZone zone)
         {
-            return new SNWLSession
+            return new FakeSNWLSession(zone)
             {
                 ID = requestModel.SessionId,
                 IP = requestModel.IP,

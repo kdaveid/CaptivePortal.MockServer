@@ -1,18 +1,21 @@
 {
+  "version": "0.2.0",
+  "authors": [ "David E. Keller" ],
+  "description": "Imitates a SonicWALL appliance for development of an external authentication server (captive portal).",
+
+  "packOptions": {
+    "tags": [ "MockServer",  "CaptivePortal", "External Authentication", "SonicWALL", "SonicOS" ],
+    "projectUrl": "https://github.com/kdaveid/CaptivePortal.MockServer",
+    "licenseUrl": "https://github.com/kdaveid/CaptivePortal.MockServer/blob/master/LICENSE"
+ },
+
+
   "dependencies": {
-    "BundlerMinifier.Core": "2.2.306",
-    "Microsoft.NETCore.App": {
-      "version": "1.1.0",
-      "type": "platform"
-    },
-    "Dkbe.CaptivePortal.Models": {
-      "target": "project"
-    },
-    "Dkbe.CaptivePortal.Infrastructure": {
-      "target": "project"
-    },
+    "BundlerMinifier.Core": "2.4.337",
+    "Dkbe.CaptivePortal.Models.SonicOS": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
-    "Microsoft.AspNetCore.Mvc": "1.1.0",
+    "Microsoft.AspNetCore.Mvc": "1.1.1",
+    "Microsoft.AspNetCore.Mvc.Formatters.Xml": "1.1.1",
     "Microsoft.AspNetCore.Razor.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"
@@ -21,26 +24,27 @@
     "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
     "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.1.0",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
     "Microsoft.Extensions.Configuration.Json": "1.1.0",
     "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
-    "Microsoft.Extensions.Configuration.CommandLine": "1.1.0"
+    "Microsoft.NETCore.App": {
+      "version": "1.1.0",
+      "type": "platform"
+    }
   },
+
   "tools": {
-    "BundlerMinifier.Core": "2.2.306",
+    "BundlerMinifier.Core": "2.4.337",
     "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final"
   },
+
   "frameworks": {
-    "netcoreapp1.1": {
-      "imports": [
-        "dotnet5.6",
-        "portable-net45+win8"
-      ]
-    }
+    "netcoreapp1.1": {}
   },
   "buildOptions": {
     "emitEntryPoint": true,
