@@ -16,8 +16,6 @@ var packPath            = Directory("./src/Dkbe.CaptivePortal.MockServer");
 
 var sourcePath          = Directory("./src");
 
-var testsPath           = Directory("test");
-
 var buildArtifacts      = Directory("./artifacts/packages");
 
 
@@ -127,9 +125,6 @@ Task("Restore")
 
 
     DotNetCoreRestore(sourcePath, settings);
-
-    DotNetCoreRestore(testsPath, settings);
-
 });
 
 
