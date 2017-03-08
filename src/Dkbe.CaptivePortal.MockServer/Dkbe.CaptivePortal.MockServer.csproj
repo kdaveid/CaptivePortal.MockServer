@@ -35,8 +35,7 @@
   </ItemGroup>
 
 
-  <Target Name="PrecompileScript" BeforeTargets="BeforeBuild">
-    <Exec Command="npm install" />
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <Exec Command="bower install" />
     <Exec Command="dotnet bundle" />
   </Target>
