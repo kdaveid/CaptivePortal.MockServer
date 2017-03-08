@@ -36,7 +36,8 @@
 
 
   <Target Name="PrecompileScript" BeforeTargets="BeforeBuild">
-    <Exec Command="bower install"/>
+    <Exec Command="npm install" />
+    <Exec Command="bower install" />
     <Exec Command="dotnet bundle" />
   </Target>
 
