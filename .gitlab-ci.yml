@@ -1,19 +1,8 @@
 stages:
-  - packages
-  - restore
   - build
-
-packages:
- stage: 'packages'
- script:
- - 'cd src/Dkbe.CaptivePortal.MockServer && bower install'
-
-restore:
-  stage: 'restore'
-  script:
+before_script:
   - 'dotnet restore'
-
 build:
  stage: build
  script:
-  - 'dotnet build -c Release --version-suffix %CI_BUILD_ID%'
+  - 'cd src/Dkbe.CaptivePortal.MockServer && dotnet build -c Release --version-suffix %CI_BUILD_ID%'
