@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <Description>Imitates a SonicWALL appliance for development of an external authentication server (captive portal).</Description>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.2.1</VersionPrefix>
+    <VersionSuffix>alpha</VersionSuffix>
     <Authors>David E. Keller</Authors>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
@@ -35,12 +36,7 @@
   </ItemGroup>
 
 
-  <Target Name="PrecompileScript" BeforeTargets="BeforeBuild">
-    <Exec Command="npm install" />
-    <Exec Command="bower install" />
-  </Target>
-
-  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+  <Target Name="PrecompileScript" BeforeTargets="Build">
     <Exec Command="dotnet bundle" />
   </Target>
 

@@ -1,20 +1,13 @@
 stages:
-  - prepare
   - restore
   - build
-
-prepare:
- stage: 'prepare'
- script: 
-  - 'cd src/Dkbe.CaptivePortal.MockServer && npm install && bower install'
 
 restore:
  stage: 'restore'
  script:
- - 'dotnet restore'
+ - 'precompile.bat'
 
 build:
  stage: build
  script:
-  - 'cd src/Dkbe.CaptivePortal.MockServer && dotnet build -c Release --version-suffix %CI_BUILD_ID%'
-
+  - 'dotnet build -c Release --version-suffix %CI_BUILD_ID%'
