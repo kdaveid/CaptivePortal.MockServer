@@ -1,11 +1,17 @@
 stages:
+  - packages
   - restore
   - build
 
-restore:
- stage: 'restore'
+packages:
+ stage: 'packages'
  script:
  - 'cd src/Dkbe.CaptivePortal.MockServer && bower install'
+
+restore:
+  stage: 'restore'
+  script:
+  - 'dotnet restore'
 
 build:
  stage: build
