@@ -6,7 +6,7 @@ stages:
 prepare:
  stage: 'prepare'
  script: 
-  - 'npm install && bower install'
+  - 'cd src/Dkbe.CaptivePortal.MockServer && npm install && bower install'
 
 restore:
  stage: 'restore'
