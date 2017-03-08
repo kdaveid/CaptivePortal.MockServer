@@ -34,7 +34,9 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
   </ItemGroup>
 
+
   <Target Name="PrecompileScript" BeforeTargets="BeforeBuild">
+    <Exec Command="bower install"/>
     <Exec Command="dotnet bundle" />
   </Target>
 
