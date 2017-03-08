@@ -5,7 +5,7 @@ stages:
 restore:
  stage: 'restore'
  script:
- - 'precompile.bat'
+ - 'cd src/Dkbe.CaptivePortal.MockServer && bower install'
 
 build:
  stage: build
