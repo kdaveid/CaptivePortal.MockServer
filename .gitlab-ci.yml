@@ -1,13 +1,7 @@
 stages:
-  - bower
   - build
 before_script:
   - 'dotnet restore'
-
-bower:
- stage: bower
- script:
- - 'npm install bower -g'
 
 build:
  stage: build
