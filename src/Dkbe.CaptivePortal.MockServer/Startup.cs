@@ -35,7 +35,7 @@ namespace Dkbe.CaptivePortal.MockServer
             services.AddMvc().AddXmlSerializerFormatters();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
