@@ -15,6 +15,8 @@ namespace Dkbe.CaptivePortal.MockServer
     {
         public static void Main(string[] args)
         {
+            Console.Title = "Mock Server";
+
             var config = new ConfigurationBuilder()
                .AddCommandLine(args)
                .Build();

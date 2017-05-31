@@ -59,7 +59,7 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
                 IP = FakeDataGenerator.GenerateRandomIp(),
                 Ufi = "0006010203",
                 SSID = "",
-                req = "http://www.gibhub.com",
+                req = "http://www.github.com",
                 ClientRedirectUrl = "http://localhost:5001",
                 MgmtBaseUrl = "http://localhost:1234"
             };

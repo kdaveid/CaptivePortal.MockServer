@@ -20,7 +20,7 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-	var projects = GetFiles("./**/project.json");
+    var projects = GetFiles("./**/*.csproj");
 
 	foreach(var project in projects)
 	{
@@ -69,7 +69,12 @@ Task("Restore")
         Sources = new [] { "https://api.nuget.org/v3/index.json" }
     };
 
-    DotNetCoreRestore(sourcePath, settings);
+    var projects = GetFiles("./**/*.csproj");
+
+	foreach(var project in projects)
+	{
+        DotNetCoreRestore(project.GetDirectory().FullPath, settings); 
+    }
 });
 
 
