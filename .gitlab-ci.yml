@@ -1,0 +1,9 @@
+stages:
+  - build
+before_script:
+  - 'dotnet restore'
+
+build:
+ stage: build
+ script:
+  - 'cd src/Dkbe.CaptivePortal.MockServer && dotnet build -c Release --version-suffix %CI_BUILD_ID%'
