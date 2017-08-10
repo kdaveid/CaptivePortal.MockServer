@@ -38,7 +38,7 @@ deploy:
 - provider: NuGet
   name: production
   api_key:
-    secure: HJtrpuuBZtoHYpXfOnY762bXQ9kIFVYnApLBV/ts0aakLHP7GiKAZ0I1LeEE6nL5
+    secure: Bn0mpepzlgrvbDw1X9A2baVg68fcfUwL437VqUMsq9j6a4XtDyCKEvB7DcsQBLIK
   on:
     # Only publish from the master branch
     branch: release
