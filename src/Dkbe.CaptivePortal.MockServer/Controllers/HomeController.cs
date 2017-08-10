@@ -23,11 +23,18 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly CaptivePortalSettings _settings;
         private readonly List<StaticZone> _zones;
+        private readonly AppSettings _appSettings;
 
-        public HomeController(IStateProvider stateProvider, IOptions<CaptivePortalSettings> captivePortalSettings, ILogger<HomeController> logger, IOptions<StaticZoneSettings> zoneSettings)
+        public HomeController(
+            IStateProvider stateProvider,
+            IOptions<AppSettings> appSettings,
+            IOptions<CaptivePortalSettings> captivePortalSettings, 
+            ILogger<HomeController> logger,
+            IOptions<StaticZoneSettings> zoneSettings)
         {
             _stateProvider = stateProvider;
             _settings = captivePortalSettings.Value;
+            _appSettings = appSettings.Value;
             _logger = logger;
             _zones = zoneSettings.Value.Zones;
         }
@@ -60,8 +67,8 @@ namespace Dkbe.CaptivePortal.MockServer.Controllers
                 Ufi = "0006010203",
                 SSID = "",
                 req = "http://www.github.com",
-                ClientRedirectUrl = "http://localhost:5001",
-                MgmtBaseUrl = "http://localhost:1234"
+                ClientRedirectUrl = zoneModel.SNWLRedirectEndpointURL,
+                MgmtBaseUrl = _appSettings.ManagementBaseUrl
             };
 
             // keep track of generated models for session sync

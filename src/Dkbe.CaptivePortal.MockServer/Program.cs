@@ -21,13 +21,18 @@ namespace Dkbe.CaptivePortal.MockServer
                .AddCommandLine(args)
                .Build();
 
+            var urls = (config[WebHostDefaults.ServerUrlsKey] ?? "http://0.0.0.0:5001")
+                .Split(new[] { ',', ';' })
+                .Select(url => url.Trim())
+                .ToArray();
+
             var host = new WebHostBuilder()
                 .UseConfiguration(config)
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseUrls("http://0.0.0.0:5001")
+                .UseUrls(urls)
                 .Build();
 
             host.Run();
