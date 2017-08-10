@@ -211,3 +211,4 @@ FakesAssemblies/
 .DS_Store/
 .DS_Store
 project.lock.json
+package-lock.json
